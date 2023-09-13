@@ -1,15 +1,15 @@
 import {useState} from 'react'
-import './auth.css'
-import {Box, Modal, TextField} from '@mui/material'
 import axios from 'axios'
+import {Box, Modal, TextField} from '@mui/material'
+import { useCookies} from 'react-cookie'
 import './auth.css'
 const API = import.meta.env.VITE_REACT_APP_API_URL
 axios.defaults.withCredentials = true
 
-export default function Auth({modal,tab,setModal,setTab,handleSignIn}) {
-
+export default function Auth({modal, tab, setModal, setTab, handleSignIn}) {
   const [loginError, setLoginError] = useState()
   const [signupError, setSignupError] = useState()
+  const [cookies, setCookie] = useCookies([])
   const [user, setUser] = useState({
     email: '',
     password: '',
@@ -59,19 +59,16 @@ export default function Auth({modal,tab,setModal,setTab,handleSignIn}) {
   }
   function handleLogin(e) {
     e.preventDefault()
+    console.log(user)
     axios
-      .post(`${API}/auth/login`, user,{
-        credentials:'include',
-        mode:'cors',
-        headers:{
-          "Content-Type":"application/json"
-        }
-      })
+      .post(`${API}/auth/login`, user)
       .then(res => {
+        setCookie('token', res.data.token)
         handleSignIn(res.data.user)
         setModal(false)
       })
       .catch(err => {
+        console.log(err)
         setLoginError(err)
       })
   }
@@ -95,105 +92,115 @@ export default function Auth({modal,tab,setModal,setTab,handleSignIn}) {
 
   return (
     <div className='auth'>
-        <Modal open={modal} onClose={() => setModal(false)}>
-          <Box sx={styleLogin} className='login-box'>
-            <aside className='modal-nav'>
-              <button className={!tab?'modal-nav-btn':'modal-nav-btn selected'} onClick={() => setTab(true)}>Sign Up</button>
-              <button className={tab?'modal-nav-btn':'modal-nav-btn selected'} onClick={() => setTab(false)}>Log-in</button>
-            </aside>
-            <button onClick={() => setModal(false)} className='cancel-login'>
-              {' '}
-              &times;{' '}
+      <Modal open={modal} onClose={() => setModal(false)}>
+        <Box sx={styleLogin} className='login-box'>
+          <aside className='modal-nav'>
+            <button
+              className={!tab ? 'modal-nav-btn' : 'modal-nav-btn selected'}
+              onClick={() => setTab(true)}
+            >
+              Sign Up
             </button>
-            {/* <img src={props.craftopiaLogo} className='logo-login' /> */}
-            {!tab ? (
-              <div>
-                <br />
-                <form className='login-form' onSubmit={handleLogin}>
-                  <TextField
-                    label='Email'
-                    variant='standard'
-                    sx={{width: '300px'}}
-                    name='email'
-                    className='input'
-                    onChange={handleLoginText}
-                  />
-                  <TextField
-                    label='Password'
-                    variant='standard'
-                    type='password'
-                    name='password'
-                    onChange={handleLoginText}
-                    sx={{width: '300px'}}
-                  />
-                  <button type='submit' className='login-btn'>
-                    {' '}
-                    Login{' '}
-                  </button>
-                </form>
-              </div>
-            ) : (
-              <div>
-                <br />
-                <form onSubmit={handleSignup} className='login-form'>
-                  <TextField
-                    variant='standard'
-                    label='Name'
-                    style={{width: '300px'}}
-                  />
-                  <TextField
-                    variant='standard'
-                    label='Email'
-                    style={{width: '300px'}}
-                    name='email'
-                    onChange={handleSignupText}
-                  />
-                  <TextField
-                    variant='standard'
-                    label='DOB'
-                    style={{width: '300px'}}
-                    name='dob'
-                    onChange={handleSignupText}
-                  />
-                  <TextField
-                    variant='standard'
-                    label='Username'
-                    style={{width: '300px'}}
-                    name='username'
-                    onChange={handleSignupText}
-                  />
-                  <TextField
-                    variant='standard'
-                    label='City, State'
-                    style={{width: '300px'}}
-                    name='city_state'
-                    onChange={handleSignupText}
-                  />
-                  <TextField
-                    variant='standard'
-                    type='password'
-                    label='Password'
-                    style={{width: '300px'}}
-                    name='password'
-                    onChange={handleSignupText}
-                  />
-                  <TextField
-                    variant='standard'
-                    label='Confirm Password'
-                    type='password'
-                    style={{width: '300px'}}
-                    name='confirm_password'
-                    onChange={handleSignupText}
-                  />
-                  <button type='submit' className='login-btn'>
-                    {' '}
-                    Sign Up{' '}
-                  </button>
-                </form>
-              </div>
-            )}
-          </Box>
-        </Modal>
+            <button
+              className={tab ? 'modal-nav-btn' : 'modal-nav-btn selected'}
+              onClick={() => setTab(false)}
+            >
+              Log-in
+            </button>
+          </aside>
+          <button onClick={() => setModal(false)} className='cancel-login'>
+            {' '}
+            &times;{' '}
+          </button>
+          {/* <img src={props.craftopiaLogo} className='logo-login' /> */}
+          {!tab ? (
+            <div>
+              <br />
+              <form className='login-form' onSubmit={handleLogin}>
+                <TextField
+                  label='Email'
+                  variant='standard'
+                  sx={{width: '300px'}}
+                  name='email'
+                  className='input'
+                  onChange={handleLoginText}
+                />
+                <TextField
+                  label='Password'
+                  variant='standard'
+                  type='password'
+                  name='password'
+                  onChange={handleLoginText}
+                  sx={{width: '300px'}}
+                />
+                <button type='submit' className='login-btn'>
+                  {' '}
+                  Login{' '}
+                </button>
+              </form>
+            </div>
+          ) : (
+            <div>
+              <br />
+              <form onSubmit={handleSignup} className='login-form'>
+                <TextField
+                  variant='standard'
+                  label='Name'
+                  style={{width: '300px'}}
+                />
+                <TextField
+                  variant='standard'
+                  label='Email'
+                  style={{width: '300px'}}
+                  name='email'
+                  onChange={handleSignupText}
+                />
+                <TextField
+                  variant='standard'
+                  label='DOB'
+                  style={{width: '300px'}}
+                  name='dob'
+                  onChange={handleSignupText}
+                />
+                <TextField
+                  variant='standard'
+                  label='Username'
+                  style={{width: '300px'}}
+                  name='username'
+                  onChange={handleSignupText}
+                />
+                <TextField
+                  variant='standard'
+                  label='City, State'
+                  style={{width: '300px'}}
+                  name='city_state'
+                  onChange={handleSignupText}
+                />
+                <TextField
+                  variant='standard'
+                  type='password'
+                  label='Password'
+                  style={{width: '300px'}}
+                  name='password'
+                  onChange={handleSignupText}
+                />
+                <TextField
+                  variant='standard'
+                  label='Confirm Password'
+                  type='password'
+                  style={{width: '300px'}}
+                  name='confirm_password'
+                  onChange={handleSignupText}
+                />
+                <button type='submit' className='login-btn'>
+                  {' '}
+                  Sign Up{' '}
+                </button>
+              </form>
+            </div>
+          )}
+        </Box>
+      </Modal>
     </div>
   )
 }

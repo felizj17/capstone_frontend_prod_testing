@@ -22,6 +22,7 @@ function App() {
   const [user, setUser] = useState(undefined)
   const [error,setError] = useState()
   const handleSignIn = authUser => {
+    console.log(authUser)
     setUser(authUser)
   }
   const handleLogout = () => {
