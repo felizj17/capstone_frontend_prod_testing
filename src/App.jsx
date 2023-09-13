@@ -37,7 +37,7 @@ function App() {
     console.log(cookies.token)
     function checkToken() {
       axios
-        .post(`${API}/auth/token`, {token:cookies.token},{
+        .post(`${API}/auth/token`, {cookie:cookies.token},{
           withCredentials: true,
         },)
         .then(res => {
