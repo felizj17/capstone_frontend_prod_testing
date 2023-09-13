@@ -22,7 +22,7 @@ const ProtectedRoute = ({user, redirectPath = '/'}) => {
 function App() {
   const [user, setUser] = useState(undefined)
   const [error,setError] = useState()
-  const [cookies, removeCookie] = useCookies()
+  const [cookies, removeCookie, updateCookies] = useCookies()
   const handleSignIn = authUser => {
 
     setUser(authUser)
@@ -30,9 +30,10 @@ function App() {
   const handleLogout = () => {
     setUser(undefined)
     removeCookie('token')
+    updateCookies()
+
   }
   useEffect(() => {
-    console.log(cookies.token)
     function checkToken() {
       axios
         .post(`${API}/auth/token`, {cookie:cookies.token},{
