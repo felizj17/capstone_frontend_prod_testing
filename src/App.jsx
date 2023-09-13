@@ -29,7 +29,7 @@ function App() {
   }
   const handleLogout = () => {
     setUser(undefined)
-    removeCookie(token)
+    removeCookie('token')
   }
   useEffect(() => {
     console.log(cookies.token)
