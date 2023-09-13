@@ -1,6 +1,7 @@
 import {useState, useEffect} from 'react'
 import {Routes, Route, Navigate, useNavigate, Outlet} from 'react-router-dom'
 import axios from 'axios'
+import {useCookies} from 'react-cookie'
 import NavBar from './components/navbar/NavBar'
 import Landing from './pages/landing/Landing'
 import Footer from './components/footer/Footer'
@@ -21,8 +22,9 @@ const ProtectedRoute = ({user, redirectPath = '/'}) => {
 function App() {
   const [user, setUser] = useState(undefined)
   const [error,setError] = useState()
+  const [cookies] = useCookies()
   const handleSignIn = authUser => {
-    console.log(authUser)
+
     setUser(authUser)
   }
   const handleLogout = () => {
@@ -32,11 +34,12 @@ function App() {
     })
   }
   useEffect(() => {
+    console.log(cookies.token)
     function checkToken() {
       axios
-        .post(`${API}/auth/token`, {
+        .post(`${API}/auth/token`, {token:cookies.token},{
           withCredentials: true,
-        })
+        },)
         .then(res => {
           handleSignIn(res.data.user)
         })
